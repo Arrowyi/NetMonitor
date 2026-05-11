@@ -7,3 +7,12 @@ captures/
 .externalNativeBuild/
 .cxx/
 .DS_Store
+
+# AI assistant tooling — local-only, never tracked
+.claude/
+.cursor/
+.aider*
+CLAUDE.md
+GEMINI.md
+AGENTS.md
+.github/copilot-instructions.md
