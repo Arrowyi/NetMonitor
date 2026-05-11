@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  NetMonitor per-API row — v3.0.0 Phase 5 migration + v2.0.3 UX iteration.
+
+  Renamed from item_netmonitor_domain.xml. NetScope v3 carries one entry
+  per (host, normalised-path) pair, so the primary cell shows `ApiStats.key`
+  = "$host$path" (e.g. `api.telenav.com/v1/search/:id`) rather than a bare
+  host name. Font sizes stay at 2× / paddings at 1.5× of the original
+  v2.0.2 layout — see layout_netmonitor_floating.xml for the scale policy
+  rationale.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
+
+    <TextView
+        android:id="@+id/tv_api_key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+    <TextView
+        android:id="@+id/tv_traffic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#AAAAAA"
+        android:textSize="18sp" />
+</LinearLayout>

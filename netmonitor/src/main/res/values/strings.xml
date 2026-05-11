@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="netmonitor_title">NetMonitor</string>
+
+    <!-- Status chip -->
+    <string name="netmonitor_status_active">ACTIVE</string>
+    <string name="netmonitor_status_not_initialized">NOT INIT</string>
+    <string name="netmonitor_status_unknown">…</string>
+
+    <!-- Section headings — NetScope v3.1 README layers -->
+    <string name="netmonitor_layer_a_heading">A 系统总流量 (kernel / UID)</string>
+    <string name="netmonitor_layer_b_heading">B Java AOP（OkHttp / URLConnection）</string>
+    <string name="netmonitor_layer_cpp_heading">C Network Usage (DataCollector 上报)</string>
+    <string name="netmonitor_layer_socket_heading">D Socket 层（IP:端口 + 协议标签，可选 hook）</string>
+
+    <string name="netmonitor_hint_layers">说明：A/B/C/D 是同一流量的不同视角；A = kernel UID 总量；B = Java AOP；C = DataCollector C++ 子系统；D = Socket hook IP:端口。</string>
+
+    <!-- Layer A / B / C: tx / rx / total. %1$s = tx, %2$s = rx, %3$s = total.
+         Args are plain strings so we can pass "获取不到" when NetScope returns null.
+         Layer C uses the same three-component format — since v2.0.3 we
+         compute tx / rx residuals independently (see NetDataRepository). -->
+    <string name="netmonitor_total_traffic">↑%1$s  ↓%2$s  Σ %3$s</string>
+    <string name="netmonitor_total_traffic_default">↑…  ↓…  Σ …</string>
+
+    <!-- NetScope connection count — %1$s = formatted int or "获取不到". -->
+    <string name="netmonitor_conn_count">活动连接：%1$s</string>
+    <string name="netmonitor_conn_count_default">活动连接：…</string>
+
+    <!-- Per-API row count (NetScope v3.0.0: one entry per host + path). Renamed
+         from netmonitor_domain_count — v2 grouped by host, v3 by (host, path),
+         so "域名" was factually wrong starting v3. Label kept in Chinese per
+         Phase 4 UX convention. -->
+    <string name="netmonitor_api_count">已统计 API：%1$d 个</string>
+    <string name="netmonitor_api_count_default">已统计 API：0 个</string>
+
+    <string name="netmonitor_cpp_api_count">Network Usage 明细：%1$d 条</string>
+    <string name="netmonitor_cpp_api_count_default">Network Usage 明细：0 条</string>
+
+    <string name="netmonitor_socket_list_heading">Socket 明细（已关闭 + 在用 fd，按字节倒序）</string>
+    <string name="netmonitor_socket_endpoint_count">端点：%1$d 个（按总流量倒序，全部展示）</string>
+    <string name="netmonitor_socket_endpoint_count_default">端点：0 个</string>
+
+    <string name="netmonitor_socket_conn_default">累计连接数（已关闭 + 在用）：…</string>
+    <string name="netmonitor_socket_conn">累计连接数（已关闭 + 在用）：%1$s</string>
+    <string name="netmonitor_socket_hook_on">Hook 状态：已安装（Layer D 活跃）</string>
+    <string name="netmonitor_socket_hook_off">Hook 状态：未安装或失败 — D 层仅显示累计值（可能为 0），详见 logcat NetScopeHook</string>
+
+    <!-- Sentinel shown wherever NetScope returned null. By policy we do NOT
+         fall back to TrafficStats etc. — if NetScope can't tell us, we say so. -->
+    <string name="netmonitor_value_unavailable">获取不到</string>
+
+    <!-- Informational banner, shown only when NetScope is NOT_INITIALIZED
+         (all layers unavailable). Transform-disabled banner from Phase 2 is
+         deprecated (v2.0.2 Transform is expected to work by default). -->
+    <string name="netmonitor_banner_not_initialized">NetScope 未初始化，各层计数为“获取不到”。请确认 Application.onCreate 调了 NetScope.init（以及按需 NetScopeHook.init/start）。</string>
+</resources>

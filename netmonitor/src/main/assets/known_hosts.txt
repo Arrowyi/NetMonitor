@@ -1,0 +1,8 @@
+# Pangu (Chery) — NetMonitor 已知域名列表
+# 启动时 DNS 预解析；Layer D 浮窗根据 IP 反查并展示域名。
+# 格式：每行一个域名；# 开头视为注释；空行忽略；最多 256 条。
+# 解析失败的条目会按 5/10/30/60/300s 退避重试；网络恢复时全表重解。
+
+# Telenav 后端
+pangumeastg.telenav.com
+streamingstagecdn.telenav.com

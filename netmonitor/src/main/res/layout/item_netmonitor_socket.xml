@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
+
+    <TextView
+        android:id="@+id/tv_socket_addr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#B2DFDB"
+        android:textSize="20sp"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+    <TextView
+        android:id="@+id/tv_socket_traffic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#AAAAAA"
+        android:textSize="18sp" />
+
+    <!-- Known-host annotation row; hidden when no domain is matched. -->
+    <TextView
+        android:id="@+id/tv_socket_domains"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFCC80"
+        android:textSize="16sp"
+        android:textStyle="italic"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:visibility="gone" />
+</LinearLayout>
