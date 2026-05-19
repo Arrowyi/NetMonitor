@@ -75,7 +75,7 @@ internal object NMLog {
 internal object NMSub {
     const val INIT = "Init"           // NetMonitorInitializer
     const val SERVICE = "Service"     // NetMonitorService
-    const val WINDOW = "Window"       // FloatingWindowManager
+    const val WINDOW = "Window"       // EmbeddedOverlayManager
     const val DNS = "DNS"             // KnownHostsLoader, KnownHostsResolver
     const val DIAG = "Diag"           // NetDataRepository TrafficStats one-shot
     const val AVD = "AvD"             // NetDataRepository A vs D periodic dump

@@ -2,7 +2,7 @@
 
 [![](https://jitpack.io/v/Arrowyi/NetMonitor.svg)](https://jitpack.io/#Arrowyi/NetMonitor)
 
-An Android library that monitors a process's network traffic and renders a draggable, collapsible floating overlay with per-API, per-socket, and per-subsystem breakdowns.
+An Android library that monitors a process's network traffic and renders a draggable, collapsible panel — embedded **inside the host Activity** — with per-API, per-socket, and per-subsystem breakdowns. No `SYSTEM_ALERT_WINDOW` permission is required.
 
 The integration surface intentionally hides all underlying SDK details (NetScope and friends) — host apps only see `NetMonitor` and a small set of optional extension points.
 
@@ -42,31 +42,48 @@ apply plugin: 'com.android.application'
 apply plugin: 'indi.arrowyi.netscope'
 
 dependencies {
-    implementation 'com.github.Arrowyi:NetMonitor:v1.0.0'
+    implementation 'com.github.Arrowyi:NetMonitor:v2.0.0'
 }
 ```
+
+> **Upgrading from v1.x?** v2.0.0 removes the system-overlay UI and renders
+> the panel inside a host Activity instead. `SYSTEM_ALERT_WINDOW` is no
+> longer needed (and can be removed from your manifest). The `init` signature
+> now takes the host Activity class — see the snippet in step 3.
 
 ### 3. `Application.onCreate()`
 
 NetMonitor needs to install a small piece of itself before native libraries load,
-so it splits initialization into two stages around `super.onCreate()`:
+so it splits initialization into two stages around `super.onCreate()`. The
+second stage takes the Activity class the panel should attach to:
 
 ```java
 public class MyApp extends Application {
     @Override
     public void onCreate() {
-        NetMonitor.preInit(this);   // stage 1 — before super.onCreate()
+        NetMonitor.preInit(this);                   // stage 1 — before super.onCreate()
         super.onCreate();
-        NetMonitor.init(this);      // stage 2 — after super.onCreate()
+        NetMonitor.init(this, MainActivity.class);  // stage 2 — after super.onCreate()
     }
 }
 ```
 
-That's it for the minimum integration. The floating window will appear shortly after the app process starts.
+Kotlin:
+
+```kotlin
+NetMonitor.preInit(this)
+super.onCreate()
+NetMonitor.init(this, MainActivity::class.java)
+```
+
+That's it for the minimum integration. The panel attaches to the Activity
+class passed to `init()` whenever an instance of it is in the foreground, and
+detaches when it leaves the foreground. Other Activities in the app
+(cluster, settings, splash, etc.) are not affected.
 
 ### 4. Optional: provide a subsystem-level usage source
 
-NetMonitor can see kernel totals (Layer A), per-API Java traffic (Layer B), and per-endpoint socket traffic (Layer D) on its own. What it **cannot** see is how much of that traffic each of your application's logical subsystems (navigation, telemetry, OTA, voice, …) is responsible for — only the host knows that. The "NetworkUsage" panel in the floating overlay (Layer C) is populated exclusively through the `NetworkUsageSource` SPI.
+NetMonitor can see kernel totals (Layer A), per-API Java traffic (Layer B), and per-endpoint socket traffic (Layer D) on its own. What it **cannot** see is how much of that traffic each of your application's logical subsystems (navigation, telemetry, OTA, voice, …) is responsible for — only the host knows that. The "NetworkUsage" panel section (Layer C) is populated exclusively through the `NetworkUsageSource` SPI.
 
 #### 4.1 SPI shape
 
@@ -77,7 +94,7 @@ interface NetworkUsageSource {
 }
 
 data class SubsystemUsage(
-    val subsystem: String,    // human-readable label shown in the overlay row
+    val subsystem: String,    // human-readable label shown in the panel row
     val uploadBytes: Long,    // cumulative tx for this subsystem since process start
     val downloadBytes: Long,  // cumulative rx for this subsystem since process start
 )
@@ -87,7 +104,7 @@ NetMonitor expects **cumulative** counters, not deltas — the same monotonicall
 
 #### 4.2 Push cadence
 
-Push a fresh snapshot whenever your numbers change, or on a fixed timer if your subsystems aggregate internally. A push every 1–2 s is plenty; the overlay itself only redraws every `NetMonitorConfig.refreshIntervalMs` (default 2 s).
+Push a fresh snapshot whenever your numbers change, or on a fixed timer if your subsystems aggregate internally. A push every 1–2 s is plenty; the panel itself only redraws every `NetMonitorConfig.refreshIntervalMs` (default 2 s).
 
 The listener callback is invoked from your thread — NetMonitor stores the snapshot into a `@Volatile` field, so any thread is safe. You do **not** need to marshal to the main thread.
 
@@ -151,8 +168,8 @@ public class MyUsageSource implements NetworkUsageSource {
 ```kotlin
 // You can call this at any point in the process lifetime — before NetMonitor.init,
 // after it, or even much later once your upstream services finish booting.
-// NetMonitor subscribes lazily, so a source installed after the overlay is
-// already showing will start populating the panel on the next refresh tick.
+// NetMonitor subscribes lazily, so a source installed after the panel is
+// already attached will start populating the NetworkUsage rows on the next refresh tick.
 NetMonitor.setNetworkUsageSource(MyUsageSource(stats))
 ```
 
@@ -183,7 +200,7 @@ NetMonitor.setLogger(object : NetMonitorLog {
 adb shell setprop debug.netmonitor.enabled 0
 ```
 
-The floating window won't appear on the next process start. Set back to `1` (or unset) to re-enable.
+The panel won't appear on the next process start, and the polling service won't be created. Set back to `1` (or unset) to re-enable.
 
 ## License
 

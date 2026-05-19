@@ -1,5 +1,7 @@
 package com.telenav.netmonitor
 
+import android.app.Activity
+
 object NetMonitorConfig {
     var refreshIntervalMs: Long = 2000L
     var maxVisibleApis: Int = 10
@@ -18,6 +20,14 @@ object NetMonitorConfig {
     var expandedMinHeightDp: Int = 300
     var expandedMaxWidthDp: Int = 840
     var expandedMaxHeightDp: Int = 900
+
+    /**
+     * The Activity class the embedded overlay attaches to. Set via
+     * [NetMonitor.init]. When `null` (init not yet called or no host
+     * activity provided), no overlay is attached and the data path is a
+     * no-op for the UI side.
+     */
+    var hostActivityClass: Class<out Activity>? = null
 
     /** Optional DataCollector-based per-subsystem traffic source (Layer C). */
     var networkUsageSource: NetworkUsageSource? = null

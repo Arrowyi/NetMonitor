@@ -11,8 +11,10 @@ import android.os.IBinder
 import android.os.Looper
 
 /**
- * Foreground service that owns the floating-window UI and polls
- * [NetDataRepository] at [NetMonitorConfig.refreshIntervalMs] cadence.
+ * Foreground service that polls [NetDataRepository] at
+ * [NetMonitorConfig.refreshIntervalMs] cadence and feeds the latest snapshot
+ * into [EmbeddedOverlayManager]. The overlay itself is hosted by the in-app
+ * Activity, not by this service.
  *
  * Does **not** call `NetScope.init()` — that's the host app's job (HMI's
  * `ProductApplication.onCreate`). NetScope is read-only from here.
@@ -23,14 +25,13 @@ import android.os.Looper
  */
 class NetMonitorService : Service() {
 
-    private lateinit var floatingWindowManager: FloatingWindowManager
     private lateinit var repository: NetDataRepository
     private var knownHostsResolver: KnownHostsResolver? = null
     private val handler = Handler(Looper.getMainLooper())
 
     private val refreshRunnable = object : Runnable {
         override fun run() {
-            floatingWindowManager.updateData(repository.getLatestData())
+            EmbeddedOverlayManager.updateData(repository.getLatestData())
             handler.postDelayed(this, NetMonitorConfig.refreshIntervalMs)
         }
     }
@@ -76,10 +77,8 @@ class NetMonitorService : Service() {
             knownHostsLookup = resolver::domainsForIp,
             networkUsageSource = NetMonitorConfig.networkUsageSource,
         )
-        floatingWindowManager = FloatingWindowManager(this)
-        floatingWindowManager.show()
 
-        handler.post { floatingWindowManager.updateData(repository.getLatestData()) }
+        handler.post { EmbeddedOverlayManager.updateData(repository.getLatestData()) }
         handler.postDelayed(refreshRunnable, NetMonitorConfig.refreshIntervalMs)
     }
 
@@ -88,7 +87,6 @@ class NetMonitorService : Service() {
         knownHostsResolver?.stop()
         knownHostsResolver = null
         repository.destroy()
-        floatingWindowManager.hide()
         super.onDestroy()
     }
 
